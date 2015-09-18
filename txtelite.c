@@ -35,12 +35,11 @@ of Elite with no combat or missions.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
-/* #include <conio.h> */
-/* #include <graph.h> */
 #include <math.h>
-#include <malloc.h>
+
+#include "SMSlib/src/SMSlib.h"
+#include "gfx.h"
 
 #define true (-1)
 #define false (0)
@@ -770,11 +769,49 @@ boolean dohelp(char *s)
 return true;
 }
 
+void load_font (void) {
+  unsigned char i, j;
+	unsigned char buffer[32], *o, *d;
+
+	o = font_fnt;
+	for (i = 0; i != 96; i++) {
+		d = buffer;
+		for (j = 0; j != 8; j++) {
+			*d = *o; d++;
+			*d = ~(*o);	d++;
+			*d = 0;	d++;
+			*d = 0;	d++;
+      o++;
+		}
+		SMS_loadTiles(buffer, i, 32);
+	}
+}
+
+void init_hardware() {
+  int i;
+
+  load_font();
+
+  for (i=0;i<16;i++) {
+    SMS_setBGPaletteColor(i,0x00);    // black
+    SMS_setSpritePaletteColor(i,0x00);    // black
+  }
+  SMS_setBGPaletteColor(01,0x3f);     // white
+  SMS_setSpritePaletteColor(01,0x3f);     // white
+
+  SMS_displayOn();
+
+  SMS_setNextTileatXY(0, 0);
+}
+
 /**+main **/
 int main()
 {	 myuint i;
    char getcommand[maxlen];
    nativerand=1;
+
+   init_hardware();
+
    printf("\nWelcome to Text Elite 1.5.\n");
 
    for(i=0;i<=lasttrade;i++) strcpy(tradnames[i],commodities[i].name);
@@ -942,6 +979,10 @@ float sqrt(float n) {
 
 char getchar() {
    return 0;
+}
+
+void putchar (char c) {
+	SMS_setTile(c - 32);
 }
 
 

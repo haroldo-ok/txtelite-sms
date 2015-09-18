@@ -6,5 +6,6 @@ gfx.*
 *.noi
 *.sym
 *.asm
+*.sav
 /*.rel
 /*.sms
