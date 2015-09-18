@@ -370,7 +370,7 @@ myuint gamesell(myuint i,myuint a) /* As gamebuy but selling */
     return t;
 }
 
-markettype genmarket(myuint fluct, plansys p)
+void genmarket(markettype *market, myuint fluct, plansys *p)
 /* Prices and availabilities are influenced by the planet's economy type
    (0-7) and a random "fluctuation" byte that was kept within the saved
    commander position to keep the market prices constant over gamesaves.
@@ -386,24 +386,23 @@ markettype genmarket(myuint fluct, plansys p)
    The player's cash is held in four bytes.
  */
 
-{	markettype market;
+{
   unsigned short i;
   for(i=0;i<=lasttrade;i++)
   {	signed int q;
-    signed int product = (p.economy)*(commodities[i].gradient);
+    signed int product = (p->economy)*(commodities[i].gradient);
     signed int changing = fluct & (commodities[i].maskbyte);
 		q =  (commodities[i].basequant) + changing - product;
     q = q&0xFF;
     if(q&0x80) {q=0;};                       /* Clip to positive 8-bit */
 
-    market.quantity[i] = (uint16)(q & 0x3F); /* Mask to 6 bits */
+    market->quantity[i] = (uint16)(q & 0x3F); /* Mask to 6 bits */
 
     q =  (commodities[i].baseprice) + changing + product;
     q = q & 0xFF;
-    market.price[i] = (uint16) (q*4);
+    market->price[i] = (uint16) (q*4);
   }
-	market.quantity[AlienItems] = 0; /* Override to force nonavailability */
-	return market;
+	market->quantity[AlienItems] = 0; /* Override to force nonavailability */
 }
 
 void displaymarket(markettype m)
@@ -517,7 +516,7 @@ void buildgalaxy(myuint galaxynum)
 
 void gamejump(planetnum i) /* Move to system i */
 { currentplanet=i;
-  localmarket = genmarket(randbyte(),galaxy[i]);
+  genmarket(&localmarket, randbyte(), &galaxy[i]);
 }
 
 myuint distance(plansys a,plansys b)
@@ -781,7 +780,7 @@ int main()
    galaxynum=1;	buildgalaxy(galaxynum);
 
    currentplanet=numforLave;                        /* Don't use jump */
-   localmarket = genmarket(0x00,galaxy[numforLave]);/* Since want seed=0 */
+   genmarket(localmarket, 0x00, &galaxy[numforLave]);/* Since want seed=0 */
 
    fuel=maxfuel;
 
