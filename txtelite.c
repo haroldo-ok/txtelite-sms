@@ -205,6 +205,8 @@ char tradnames[lasttrade][maxlen]; /* Tradegood names used in text commands
 
 #define nocomms (14)
 
+float floor(float n);
+
 boolean dobuy(char *);
 boolean dosell(char *);
 boolean dofuel(char *);
@@ -927,5 +929,10 @@ void goat_soup(const char *source,plansys * psy)
 		}	/* endelse */
 	}	/* endwhile */
 }	/* endfunc */
+
+// TODO: Actually implement floor
+float floor(float n) {
+  return (long) floor;
+}
 
 /**+end **/
