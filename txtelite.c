@@ -208,6 +208,8 @@ char tradnames[lasttrade][maxlen]; /* Tradegood names used in text commands
 float floor(float n);
 float sqrt(float n);
 
+char getchar();
+
 boolean dobuy(char *);
 boolean dosell(char *);
 boolean dofuel(char *);
@@ -544,7 +546,7 @@ planetnum matchsys(char *s)
 /**-Print data for given system **/
 void prisys(plansys *plsy,boolean compressed)
 {	if (compressed)
-	{	myuint i;
+	{
    //	  printf("\n ");
 	  printf("%10s",plsy->name);
   	printf(" TL: %2i ",(plsy->techlev)+1);
@@ -809,7 +811,6 @@ int main()
       I have checked with this code for Zaonce with fluctaution &AB
       against the SuperVision 6502 code and both prices and availabilities tally.
    */
-return(0);
 }
 
 /* "Goat Soup" planetary description string code - adapted from Christian Pinder's
@@ -938,5 +939,10 @@ float floor(float n) {
 float sqrt(float n) {
   return sqrtf(n);
 }
+
+char getchar() {
+   return 0;
+}
+
 
 /**+end **/
