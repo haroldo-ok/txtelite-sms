@@ -546,7 +546,7 @@ planetnum matchsys(char *s)
 /**-Print data for given system **/
 void prisys(plansys *plsy,boolean compressed)
 {	if (compressed)
-	{	myuint i;
+	{
    //	  printf("\n ");
 	  printf("%10s",plsy->name);
   	printf(" TL: %2i ",(plsy->techlev)+1);
@@ -811,7 +811,6 @@ int main()
       I have checked with this code for Zaonce with fluctaution &AB
       against the SuperVision 6502 code and both prices and availabilities tally.
    */
-return(0);
 }
 
 /* "Goat Soup" planetary description string code - adapted from Christian Pinder's
