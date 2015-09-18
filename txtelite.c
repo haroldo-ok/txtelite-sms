@@ -206,6 +206,7 @@ char tradnames[lasttrade][maxlen]; /* Tradegood names used in text commands
 #define nocomms (14)
 
 float floor(float n);
+float sqrt(float n);
 
 boolean dobuy(char *);
 boolean dosell(char *);
@@ -516,7 +517,7 @@ void gamejump(planetnum i) /* Move to system i */
   genmarket(&localmarket, randbyte(), &galaxy[i]);
 }
 
-myuint distance(plansys a,plansys b)
+myuint distance(plansys *a, plansys *b)
 /* Seperation between two planets (4*sqrt(X*X+Y*Y/4)) */
 {	return (myuint)ftoi(4*sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)/4));
 }
@@ -530,8 +531,8 @@ planetnum matchsys(char *s)
    myuint d=9999;
 	 for(syscount=0;syscount<galsize;++syscount)
    { if (stringbeg(s,galaxy[syscount].name))
-     {	if (distance(galaxy[syscount],galaxy[currentplanet])<d)
-      	{ d=distance(galaxy[syscount],galaxy[currentplanet]);
+     {	if (distance(&galaxy[syscount],&galaxy[currentplanet])<d)
+      	{ d=distance(&galaxy[syscount],&galaxy[currentplanet]);
         	p=syscount;
       	}
     	}
@@ -584,7 +585,7 @@ boolean dolocal(char *s)
    atoi(s);
    printf("Galaxy number %i",galaxynum);
    for(syscount=0;syscount<galsize;++syscount)
-   { 	d=distance(galaxy[syscount],galaxy[currentplanet]);
+   { 	d=distance(&galaxy[syscount], &galaxy[currentplanet]);
    		if(d<=maxfuel)
     	{ 	if(d<=fuel)	printf("\n * "); else printf("\n - ");
     		prisys(galaxy[syscount],true);
@@ -599,7 +600,7 @@ boolean dojump(char *s) /* Jump to planet name s */
 { myuint d;
   planetnum dest=matchsys(s);
   if(dest==currentplanet) { printf("\nBad jump"); return false; }
-  d=distance(galaxy[dest],galaxy[currentplanet]);
+  d=distance(&galaxy[dest], &galaxy[currentplanet]);
   if (d>fuel) { printf("\nJump to far"); return false; }
   fuel-=d;
   gamejump(dest);
@@ -926,9 +927,12 @@ void goat_soup(const char *source,plansys * psy)
 	}	/* endwhile */
 }	/* endfunc */
 
-// TODO: Actually implement floor
 float floor(float n) {
-  return (long) floor;
+  return floorf(n);
+}
+
+float sqrt(float n) {
+  return sqrtf(n);
 }
 
 /**+end **/
