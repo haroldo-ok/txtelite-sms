@@ -405,13 +405,13 @@ void genmarket(markettype *market, myuint fluct, plansys *p)
 	market->quantity[AlienItems] = 0; /* Override to force nonavailability */
 }
 
-void displaymarket(markettype m)
+void displaymarket(markettype *m)
 {	unsigned short i;
  	for(i=0;i<=lasttrade;i++)
  	{ printf("\n");
    printf("%s",commodities[i].name);
-   printf("   %.1f",((float)(m.price[i])/10));
-   printf("   %u",m.quantity[i]);
+   printf("   %.1f",((float)(m->price[i])/10));
+   printf("   %u",m->quantity[i]);
    printf("%s",unitnames[commodities[i].units]);
    printf("   %u",shipshold[i]);
  }
@@ -419,39 +419,39 @@ void displaymarket(markettype m)
 
 /**-Generate system info from seed **/
 
-plansys makesystem(seedtype *s)
-{	plansys thissys;
+void makesystem(plansys *thissys, seedtype *s)
+{
   myuint pair1,pair2,pair3,pair4;
   uint16 longnameflag=((*s).w0)&64;
   char *pairs1 = &pairs[24];  /* start of pairs used by this routine */
 
-  thissys.x=(((*s).w1)>>8);
-  thissys.y=(((*s).w0)>>8);
+  thissys->x=(((*s).w1)>>8);
+  thissys->y=(((*s).w0)>>8);
 
-  thissys.govtype =((((*s).w1)>>3)&7); /* bits 3,4 &5 of w1 */
+  thissys->govtype =((((*s).w1)>>3)&7); /* bits 3,4 &5 of w1 */
 
-  thissys.economy =((((*s).w0)>>8)&7); /* bits 8,9 &A of w0 */
-  if (thissys.govtype <=1)
-  { thissys.economy = ((thissys.economy)|2);
+  thissys->economy =((((*s).w0)>>8)&7); /* bits 8,9 &A of w0 */
+  if (thissys->govtype <=1)
+  { thissys->economy = ((thissys->economy)|2);
   }
 
-  thissys.techlev =((((*s).w1)>>8)&3)+((thissys.economy)^7);
-  thissys.techlev +=((thissys.govtype)>>1);
-  if (((thissys.govtype)&1)==1)	thissys.techlev+=1;
+  thissys->techlev =((((*s).w1)>>8)&3)+((thissys->economy)^7);
+  thissys->techlev +=((thissys->govtype)>>1);
+  if (((thissys->govtype)&1)==1)	thissys->techlev+=1;
    /* C simulation of 6502's LSR then ADC */
 
-  thissys.population = 4*(thissys.techlev) + (thissys.economy);
-  thissys.population +=  (thissys.govtype) + 1;
+  thissys->population = 4*(thissys->techlev) + (thissys->economy);
+  thissys->population +=  (thissys->govtype) + 1;
 
-  thissys.productivity = (((thissys.economy)^7)+3)*((thissys.govtype)+4);
-  thissys.productivity *= (thissys.population)*8;
+  thissys->productivity = (((thissys->economy)^7)+3)*((thissys->govtype)+4);
+  thissys->productivity *= (thissys->population)*8;
 
-  thissys.radius = 256*(((((*s).w2)>>8)&15)+11) + thissys.x;
+  thissys->radius = 256*(((((*s).w2)>>8)&15)+11) + thissys->x;
 
-	thissys.goatsoupseed.a = (*s).w1 & 0xFF;;
-	thissys.goatsoupseed.b = (*s).w1 >>8;
-	thissys.goatsoupseed.c = (*s).w2 & 0xFF;
-	thissys.goatsoupseed.d = (*s).w2 >> 8;
+	thissys->goatsoupseed.a = (*s).w1 & 0xFF;;
+	thissys->goatsoupseed.b = (*s).w1 >>8;
+	thissys->goatsoupseed.d = (*s).w2 >> 8;
+	thissys->goatsoupseed.c = (*s).w2 & 0xFF;
 
   pair1=2*((((*s).w2)>>8)&31);  tweakseed(s);
   pair2=2*((((*s).w2)>>8)&31);  tweakseed(s);
@@ -459,25 +459,22 @@ plansys makesystem(seedtype *s)
   pair4=2*((((*s).w2)>>8)&31);	tweakseed(s);
    /* Always four iterations of random number */
 
-  (thissys.name)[0]=pairs1[pair1];
-  (thissys.name)[1]=pairs1[pair1+1];
-  (thissys.name)[2]=pairs1[pair2];
-  (thissys.name)[3]=pairs1[pair2+1];
-  (thissys.name)[4]=pairs1[pair3];
-  (thissys.name)[5]=pairs1[pair3+1];
+  (thissys->name)[0]=pairs1[pair1];
+  (thissys->name)[1]=pairs1[pair1+1];
+  (thissys->name)[2]=pairs1[pair2];
+  (thissys->name)[4]=pairs1[pair3];
+  (thissys->name)[3]=pairs1[pair2+1];
+  (thissys->name)[5]=pairs1[pair3+1];
 
   if(longnameflag) /* bit 6 of ORIGINAL w0 flags a four-pair name */
   {
-  (thissys.name)[6]=pairs1[pair4];
-  (thissys.name)[7]=pairs1[pair4+1];
-  (thissys.name)[8]=0;
+  (thissys->name)[6]=pairs1[pair4];
+  (thissys->name)[7]=pairs1[pair4+1];
+  (thissys->name)[8]=0;
   }
-  else (thissys.name)[6]=0;
-  stripout(thissys.name,'.');
+  else (thissys->name)[6]=0;
+  stripout(thissys->name,'.');
 
-
-
-return thissys;
 }
 
 
@@ -509,7 +506,7 @@ void buildgalaxy(myuint galaxynum)
 	seed.w0=base0; seed.w1=base1; seed.w2=base2; /* Initialise seed for galaxy 1 */
 	for(galcount=1;galcount<galaxynum;++galcount) nextgalaxy(&seed);
 	/* Put galaxy data into array of structures */
-  for(syscount=0;syscount<galsize;++syscount) galaxy[syscount]=makesystem(&seed);
+  for(syscount=0;syscount<galsize;++syscount) makesystem(&galaxy[syscount], &seed);
 }
 
 /**-Functions for navigation **/
@@ -721,7 +718,7 @@ boolean docash(char *s) /* Cheat alter cash by S */
 
 boolean domkt(char *s) /* Show stock market */
 { atoi(s);
-  displaymarket(localmarket);
+  displaymarket(&localmarket);
   printf("\nFuel :%.1f",(float)fuel/10);
   printf("      Holdspace :%it",holdspace);
   return true;
