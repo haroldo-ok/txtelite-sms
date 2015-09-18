@@ -519,7 +519,7 @@ void gamejump(planetnum i) /* Move to system i */
 
 myuint distance(plansys *a, plansys *b)
 /* Seperation between two planets (4*sqrt(X*X+Y*Y/4)) */
-{	return (myuint)ftoi(4*sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)/4));
+{	return (myuint)ftoi(4*sqrt((a->x-b->x)*(a->x-b->x)+(a->y-b->y)*(a->y-b->y)/4));
 }
 
 
