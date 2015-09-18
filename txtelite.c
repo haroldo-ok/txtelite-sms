@@ -207,6 +207,7 @@ char tradnames[lasttrade][maxlen]; /* Tradegood names used in text commands
 
 float floor(float n);
 float sqrt(float n);
+void exit(int code);
 
 boolean dobuy(char *);
 boolean dosell(char *);
@@ -542,33 +543,37 @@ planetnum matchsys(char *s)
 
 
 /**-Print data for given system **/
-void prisys(plansys plsy,boolean compressed)
+void prisys(plansys *plsy,boolean compressed)
 {	if (compressed)
 	{	myuint i;
    //	  printf("\n ");
-	  printf("%10s",plsy.name);
-  	printf(" TL: %2i ",(plsy.techlev)+1);
-  	printf("%12s",econnames[plsy.economy]);
-  	printf(" %15s",govnames[plsy.govtype]);
+	  printf("%10s",plsy->name);
+  	printf(" TL: %2i ",(plsy->techlev)+1);
+  	printf("%12s",econnames[plsy->economy]);
+  	printf(" %15s",govnames[plsy->govtype]);
 	}
 	else
 	{	printf("\n\nSystem:  ");
-  	printf("%s",plsy.name);
-  	printf("\nPosition (%i,",plsy.x);
-  	printf("%i)",plsy.y);
-  	printf("\nEconomy: (%i) ",plsy.economy);
-  	printf("%s",econnames[plsy.economy]);
-  	printf("\nGovernment: (%i) ",plsy.govtype);
-  	printf("%s",govnames[plsy.govtype]);
-  	printf("\nTech Level: %2i",(plsy.techlev)+1);
-  	printf("\nTurnover: %u",(plsy.productivity));
-  	printf("\nRadius: %u",plsy.radius);
+  	printf("%s",plsy->name);
+  	printf("\nPosition (%i,",plsy->x);
+  	printf("%i)",plsy->y);
+  	printf("\nEconomy: (%i) ",plsy->economy);
+  	printf("%s",econnames[plsy->economy]);
+  	printf("\nGovernment: (%i) ",plsy->govtype);
+  	printf("%s",govnames[plsy->govtype]);
+  	printf("\nTech Level: %2i",(plsy->techlev)+1);
+  	printf("\nTurnover: %u",(plsy->productivity));
+  	printf("\nRadius: %u",plsy->radius);
         /* fixed (R.C.): divide population by 10, not by 8, and format as
            float with 1 decimal */
-  	printf("\nPopulation: %.1f Billion",(plsy.population) / 10.0);
+  	printf("\nPopulation: %.1f Billion",(plsy->population) / 10.0);
 
-		rnd_seed = plsy.goatsoupseed;
-		printf("\n");goat_soup("\x8F is \x97.",&plsy);
+		rnd_seed.a = plsy->goatsoupseed.a;
+    rnd_seed.b = plsy->goatsoupseed.b;
+    rnd_seed.c = plsy->goatsoupseed.c;
+    rnd_seed.d = plsy->goatsoupseed.d;
+
+		printf("\n");goat_soup("\x8F is \x97.",plsy);
 	}
 }
 
@@ -588,7 +593,7 @@ boolean dolocal(char *s)
    { 	d=distance(&galaxy[syscount], &galaxy[currentplanet]);
    		if(d<=maxfuel)
     	{ 	if(d<=fuel)	printf("\n * "); else printf("\n - ");
-    		prisys(galaxy[syscount],true);
+    		prisys(&galaxy[syscount],true);
       		printf(" (%.1f LY)",(float)d/10);
     	}
    }
@@ -604,7 +609,7 @@ boolean dojump(char *s) /* Jump to planet name s */
   if (d>fuel) { printf("\nJump to far"); return false; }
   fuel-=d;
   gamejump(dest);
-  prisys(galaxy[currentplanet],false);
+  prisys(&galaxy[currentplanet],false);
   return true;
 }
 
@@ -629,7 +634,7 @@ boolean dogalhyp(char *s) /* Jump to next galaxy */
 
 boolean doinfo(char *s) /* Info on planet */
 {	planetnum dest=matchsys(s);
-  prisys(galaxy[dest],false);
+  prisys(&galaxy[dest],false);
 	return true;
 }
 
@@ -933,6 +938,10 @@ float floor(float n) {
 
 float sqrt(float n) {
   return sqrtf(n);
+}
+
+void exit(int code) {
+  // TODO: Implement exit
 }
 
 /**+end **/
