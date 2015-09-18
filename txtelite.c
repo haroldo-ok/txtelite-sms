@@ -783,7 +783,7 @@ int main()
    galaxynum=1;	buildgalaxy(galaxynum);
 
    currentplanet=numforLave;                        /* Don't use jump */
-   genmarket(localmarket, 0x00, &galaxy[numforLave]);/* Since want seed=0 */
+   genmarket(&localmarket, 0x00, &galaxy[numforLave]);/* Since want seed=0 */
 
    fuel=maxfuel;
 
