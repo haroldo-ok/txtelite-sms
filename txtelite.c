@@ -208,6 +208,8 @@ char tradnames[lasttrade][maxlen]; /* Tradegood names used in text commands
 float floor(float n);
 float sqrt(float n);
 
+char getchar();
+
 boolean dobuy(char *);
 boolean dosell(char *);
 boolean dofuel(char *);
@@ -938,5 +940,10 @@ float floor(float n) {
 float sqrt(float n) {
   return sqrtf(n);
 }
+
+char getchar() {
+   return 0;
+}
+
 
 /**+end **/
